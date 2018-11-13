@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
-class DBConnect 
+class DB_Connect 
 {
     protected $db;
 
-    protected function __contruct($db = NULL)
+    protected function __construct($db = NULL)
     {
         if (is_object($db)) {
             $this->db = $db;
