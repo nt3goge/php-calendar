@@ -10,6 +10,7 @@ if (is_object($calendar)) {
     echo '<div class="displaynone">';
     echo '<pre>';
     print_r($calendar);
+    print_r($calendar->_loadEventData());
     echo '</pre>';
     echo '</div>';
 }
