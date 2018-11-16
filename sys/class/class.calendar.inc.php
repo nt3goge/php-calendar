@@ -38,7 +38,7 @@ class Calendar extends DB_Connect
         $this->_startDay = (int)date('w', $ts);
     }
 
-    public function _loadEventData($id = NULL)
+    private function _loadEventData($id = NULL)
     {
         $sql = "SELECT * FROM events";
 
@@ -68,6 +68,76 @@ class Calendar extends DB_Connect
         } catch (EXception $e) {
             die($e->getMessage());
         }
+    }
+
+    private function _createEventObj()
+    {
+        $arr = $this->_loadEventData();
+
+        $events = array();
+
+        foreach ($arr as $event) {
+            $day = date('j', strtotime($event['event_start']));
+        }
+
+        try {
+            $events[$day][] = new Event($event);
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
+
+        return $events;
+    }
+
+    public function buildCalendar()
+    {
+        define('WEEKDAYS', array('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'));
+
+        $calMonth = date('F Y', strtotime($this->_userDate));
+        $html = '<h2>' . $calMonth . '</h2>';
+        for ($d = 0, $labels = NULL; $d < 7; ++$d) {
+            $labels .= '<li>' . WEEKDAYS[$d] . '</li>';
+        }
+        $html .= '<ul class="weekdays">' . $labels . '</ul>';
+
+        $events = $this->_createEventObj();
+
+        $html .= '<ul>';
+        for ($i = 1, $c = 1, $t = date('j'), $m = date('m'), $y = date('Y'); $c <= $this->_daysInMonth; ++$i) {
+            $class = $i <= $this->_startDay ? 'fill' : NULL;
+
+            if ($c == $t && $m == $this->_m && $y == $this->_y) {
+                $class = 'today';
+            }
+
+            $ls = sprintf('<li class="%s">', $class);
+            $le = '</li>';
+
+            $date = '&bnsp;';
+            $eventInfo = NULL;
+            
+            if ($this->_startDay < $i && $this->_daysInMonth >= $c) {
+                if (isset($events[$c])) {
+                    foreach ($events[$c] as $event) {
+                        $link = '<a href="view.php?event_id=' . $event->id . '">' . $event->title . '</a>';
+                        $eventInfo .= $link;
+                    }
+                } 
+
+                $date = sprintf('<b>%02d</b>', $c++);
+            }
+
+            $wrap = $i != 0 && $i % 7 == 0 ? '</ul><ul>' : NULL;
+            $html .= $ls . $date . $eventInfo . $le . $wrap;
+        }
+
+        while ($i % 7 != 1) {
+            $html .= '<li clas="fill">&nbsp;</li>';
+            ++$i;
+        }
+
+        $html .= '</ul>';
+        return $html;
     }
 }
 ?>
