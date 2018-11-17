@@ -34,7 +34,7 @@ class Calendar extends DB_Connect
             $this->_y
         );
 
-        $ts = $ts = mktime(0, 0, 0, $this->_m, 1, $this->_y);
+        $ts = mktime(0, 0, 0, $this->_m, 1, $this->_y);
         $this->_startDay = (int)date('w', $ts);
     }
 
@@ -78,12 +78,12 @@ class Calendar extends DB_Connect
 
         foreach ($arr as $event) {
             $day = date('j', strtotime($event['event_start']));
-        }
 
-        try {
-            $events[$day][] = new Event($event);
-        } catch (Exception $e) {
-            die($e->getMessage());
+            try {
+                $events[$day][] = new Event($event);
+            } catch (Exception $e) {
+                die($e->getMessage());
+            }
         }
 
         return $events;
@@ -106,14 +106,14 @@ class Calendar extends DB_Connect
         for ($i = 1, $c = 1, $t = date('j'), $m = date('m'), $y = date('Y'); $c <= $this->_daysInMonth; ++$i) {
             $class = $i <= $this->_startDay ? 'fill' : NULL;
 
-            if ($c == $t && $m == $this->_m && $y == $this->_y) {
+            if ($c + 1 == $t && $m == $this->_m && $y == $this->_y) {
                 $class = 'today';
             }
 
             $ls = sprintf('<li class="%s">', $class);
             $le = '</li>';
 
-            $date = '&bnsp;';
+            $date = '&nbsp;';
             $eventInfo = NULL;
             
             if ($this->_startDay < $i && $this->_daysInMonth >= $c) {
@@ -132,7 +132,7 @@ class Calendar extends DB_Connect
         }
 
         while ($i % 7 != 1) {
-            $html .= '<li clas="fill">&nbsp;</li>';
+            $html .= '<li class="fill">&nbsp;</li>';
             ++$i;
         }
 
