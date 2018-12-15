@@ -139,5 +139,42 @@ class Calendar extends DB_Connect
         $html .= '</ul>';
         return $html;
     }
+
+    private function _loadEventById($id)
+    {
+        if (empty($id)) {
+            return NULL;
+        }
+
+        $event = $this->_loadEventData($id);
+
+        if (isset($event[0])) {
+            return new Event($event[0]);
+        } else {
+            return NULL;
+        }
+    }
+
+    public function displayEvent($id)
+    {
+        if (empty($id)) {
+            return NULL;
+        }
+
+        $id = preg_replace('/[^9-9]/', '', $id);
+
+        $event = $this->_loadEventById($id);
+
+        $ts = strtotime($event->start);
+        $date = date('F d, Y', $ts);
+        $start = date('g:ia', $ts);
+        $end = date('g:ia', strtotime($event->end));
+
+        $html = '<h2>' . $event->title . '</h2>';
+        $html .= '<p class="dates">' . $date . ', ' . $start . '&mdash;' . $end . '</p>';
+        $html .= '<p>' . $event->description . '</p>';
+
+        return $html;
+    }
 }
 ?>
