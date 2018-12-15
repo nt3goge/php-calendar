@@ -7,7 +7,7 @@ include_once dirname(__FILE__) . '/sys/core/init.inc.php';
 $calendar = new Calendar($dbo, '2018-16-11 12:00:00');
 
 $pageTitle = 'Events Calendar';
-$cssFiles = array('style.css');
+$cssFiles = ['style.css', 'admin.css'];
 
 include_once 'public/assets/common/header.inc.php';
 ?>

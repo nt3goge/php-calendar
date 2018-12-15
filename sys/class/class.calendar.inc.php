@@ -119,7 +119,7 @@ class Calendar extends DB_Connect
             if ($this->_startDay < $i && $this->_daysInMonth >= $c) {
                 if (isset($events[$c])) {
                     foreach ($events[$c] as $event) {
-                        $link = '<a href="view.php?event_id=' . $event->id . '">' . $event->title . '</a>';
+                        $link = '<a href="public/view.php?event_id=' . $event->id . '">' . $event->title . '</a>';
                         $eventInfo .= $link;
                     }
                 } 
@@ -137,7 +137,10 @@ class Calendar extends DB_Connect
         }
 
         $html .= '</ul>';
-        return $html;
+
+        $admin = $this->_adminGeneralOptions();
+        
+        return $html . $admin;
     }
 
     private function _loadEventById($id)
@@ -204,7 +207,7 @@ class Calendar extends DB_Connect
         }
 
         $html = <<<FORM_MARKUP
-            <form action="assets/inc/process.inc.php" method="post">
+            <form action="public/assets/inc/process.inc.php" method="post">
                 <fieldset>
                     <legend>$submit</legend>
 
@@ -234,6 +237,46 @@ class Calendar extends DB_Connect
 FORM_MARKUP;
 
         return $html;
+    }
+
+    public function processForm()
+    {
+        if ($_POST['action'] != 'event_edit')  {
+            return 'The method processForm was accessed incorrectly';
+        }
+
+        $title = htmlentities($_POST['event_title'], ENT_QUOTES);
+        $description = htmlentities($_POST['event_description'], ENT_QUOTES);
+        $start = htmlentities($_POST['event_start'], ENT_QUOTES);
+        $end = htmlentities($_POST['event_end'], ENT_QUOTES);
+
+        if (empty($_POST['event_id'])) {
+            $sql = 'INSERT INTO events (event_title, event_desc, event_start, event_end) VALUES (:title, :description, :start, :end)'; 
+        } else {
+            $id = (int)$_POST['event_id'];
+            $sql = 'UPDATE events SET event_title =:title, event_desc =:description, event_start =:start, event_end =:end WHERE event_id =' . $id;
+        }
+
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+            $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+            $stmt->bindParam(':start', $start, PDO::PARAM_STR);
+            $stmt->bindParam(':end', $end, PDO::PARAM_STR);
+            $stmt->execute();
+            $stmt->closeCursor();
+            
+            return true;
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    private function _adminGeneralOptions()
+    {
+        return <<<ADMIN_OPTIONS
+            <a href="public/admin.php" class="admin">+ Add a New Event</a>
+ADMIN_OPTIONS;
     }
 }
 ?>
