@@ -17,14 +17,14 @@ if (isset($_GET['event_id'])) {
 include_once '../sys/core/init.inc.php';
 
 $pageTitle = 'View Event';
-$cssFile = array('style.css');
+$cssFiles = array('style.css');
 
 include_once 'assets/common/header.inc.php';
 
 $cal = new Calendar($dbo);
 ?>
 <div id="content">
-<?php echo $cal->displayEvent($id); ?><a href="./"></a>
+<?php echo $cal->displayEvent($id); ?><a href="./">&laquo; Back to the calendar</a>
 </div>
 <?php 
 include_once 'assets/common/footer.inc.php';

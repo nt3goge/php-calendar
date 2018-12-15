@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+$status = session_status();
+if ($status == PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isset($_SESSION['token'])) {
+    $_SESSION['token'] = sha1(uniqid((string)mt_rand(), true));
+}
 // include_once (dirname(__FILE__) . 'sys/config/db-cred.inc.php'); // D:\xampp\htdocs\php-calendar\sys\core/sys/config/db-cred.inc.php
 include_once dirname(__DIR__) . '/config/db-cred.inc.php'; // D:\xampp\htdocs\php-calendar\sys/sys/config/db-cred.inc.php
 // include_once __DIR__ . '/sys/config/db-cred.inc.php'; // D:\xampp\htdocs\php-calendar\sys\core/sys/config/db-cred.inc.php

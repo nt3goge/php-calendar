@@ -161,7 +161,7 @@ class Calendar extends DB_Connect
             return NULL;
         }
 
-        $id = preg_replace('/[^9-9]/', '', $id);
+        $id = preg_replace('/[^0-9]/', '', $id);
 
         $event = $this->_loadEventById($id);
 
@@ -173,6 +173,65 @@ class Calendar extends DB_Connect
         $html = '<h2>' . $event->title . '</h2>';
         $html .= '<p class="dates">' . $date . ', ' . $start . '&mdash;' . $end . '</p>';
         $html .= '<p>' . $event->description . '</p>';
+
+        return $html;
+    }
+
+    public function displayForm()
+    {
+        if (isset($_POST['event_id'])) {
+            $id = (int)$_POST['event_id'];
+        } else {
+            $id = NULL;
+        }
+
+        $submit = 'Create a New Event';
+        $event = new stdClass;
+        $event->id = '';
+        $event->title = '';
+        $event->start = '';
+        $event->end = '';
+        $event->description = '';
+
+        if (!empty($id)) {
+            $event = $this->_loadEventById($id);
+
+            if (!is_object($event)) {
+                return NULL;
+            }
+    
+            $submit = 'Edit This Event';
+        }
+
+        $html = <<<FORM_MARKUP
+            <form action="assets/inc/process.inc.php" method="post">
+                <fieldset>
+                    <legend>$submit</legend>
+
+                    <label for="event_title">Event Title</label>
+                    <input type="text" name="event_title"
+                            id="event_title" value="$event->title" />
+
+                    <label for="event_start">Start Time</label>
+                    <input type="text" name="event_start"
+                            id="event_start" value="$event->start" />
+
+                    <label for="event_end">End Time</label>
+                    <input type="text" name="event_end"
+                            id="event_end" value="$event->end" />
+
+                    <label for="event_description">Event Description</label>
+                    <textarea type="text" name="event_description"
+                            id="event_description">$event->description</textarea>
+                        
+                    <input type="hidden" name="event_id" value="$event->id" />
+                    <input type="hidden" name="token" value="$_SESSION[token]" />
+                    <input type="hidden" name="action" value="event_edit" />
+                    <input type="submit" name="event_submit" value="$submit" />
+                    or <a href="./">cancel</a>
+                </fieldset>
+            </form>
+FORM_MARKUP;
 
         return $html;
     }
