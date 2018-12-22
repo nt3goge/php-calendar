@@ -13,7 +13,10 @@ include_once 'public/assets/common/header.inc.php';
 ?>
 
 <div id="content">
-<?php echo $calendar->buildCalendar(); ?>
+    <?php echo $calendar->buildCalendar(); ?>
 </div>
+<p>
+    <?php echo isset($_SESSION['user']) ? 'Logged In!' : 'Logged Out!'; ?>
+</p>
 
 <?php include_once 'public/assets/common/header.inc.php'; ?>

@@ -165,17 +165,17 @@ class Calendar extends DB_Connect
         }
 
         $id = preg_replace('/[^0-9]/', '', $id);
-
         $event = $this->_loadEventById($id);
-
         $ts = strtotime($event->start);
         $date = date('F d, Y', $ts);
         $start = date('g:ia', $ts);
         $end = date('g:ia', strtotime($event->end));
 
+        $admin = $this->_adminEntryOptions($id);
         $html = '<h2>' . $event->title . '</h2>';
         $html .= '<p class="dates">' . $date . ', ' . $start . '&mdash;' . $end . '</p>';
         $html .= '<p>' . $event->description . '</p>';
+        $html .= $admin;
 
         return $html;
     }
@@ -274,9 +274,102 @@ FORM_MARKUP;
 
     private function _adminGeneralOptions()
     {
-        return <<<ADMIN_OPTIONS
-            <a href="public/admin.php" class="admin">+ Add a New Event</a>
+        if (isset($_SESSION['user'])) {
+            return <<<ADMIN_OPTIONS
+                <a href="public/admin.php" class="admin">+ Add a New Event</a>
+                <form action="public/assets/inc/process.inc.php" method="post">
+                    <div>
+                        <input type="submit" value="Log Out" class="logout" />
+                        <input type="hidden" name="token" value="$_SESSION[token]" />
+                        <input type="hidden" name="action" value="user_logout" />
+                    </div>
+                </form>
 ADMIN_OPTIONS;
+        } else {
+            return <<<ADMIN_OPTIONS
+                <a href="public/login.php">Log in</a>
+ADMIN_OPTIONS;
+        }
+    }
+    
+    private function _adminEntryOptions($id)
+    {
+        if (isset($_SESSION['user'])) {
+            return <<<ADMIN_OPTIONS
+                <div class="admin-options">
+                    <form action="public/admin.php" method="post">
+                        <p>
+                            <input type="submit" name="edit_event"
+                                value="Edit This Event" />
+                            <input type="hidden" name="event_id"
+                                value="$id" />
+                        </p>
+                    </form>
+                    <form action="public/confirm_delete.php" method="post">
+                        <p>
+                            <input type="submit" name="delete_event"
+                                value="Delete This Event" />
+                            <input type="hidden" name="event_id"
+                                value="$id" />
+                        </p>
+                    </form>
+                </div>
+ADMIN_OPTIONS;
+        } else {
+            return NULL;
+        }
+    }
+
+    public function confirmDelete($id)
+    {
+        if (empty($id)) {
+            return NULL;
+        }
+
+        $id = preg_replace('/[^0-9]/', '', $id);
+
+        if (isset($_POST['confirm_delete']) && $_POST['token'] == $_SESSION['token']) {
+            if ($_POST['confirm_delete'] == 'Yes, Delete It') {
+                $sql = 'DELETE FROM `events` WHERE `event_id` =:id LIMIT 1';
+
+                try {
+                    $stmt = $this->db->prepare($sql);
+                    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                    $stmt->execute();
+                    $stmt->closeCursor();
+                    header('Location: ./');
+                    return;
+                } catch (Exception $e) {
+                    return $e->getMessage();
+                }
+            } else {
+                header('Location: ./');
+                return;
+            }
+        }
+
+        $event = $this->_loadEventById($id);
+
+        if (!is_object($event)) {
+            header('Location: ./');
+        }
+
+        return <<<CONFIRM_DELETE
+            <form action="public/confirm_delete.php" method="post">
+                <h2>Are you sure want to delete "$event->title"?</h2>
+                <p>There is <b>no undo</b> if you continue.</p>
+                <p>
+                    <input type="submit" name="confirm_delete"
+                        value="Yes, Delete It" />
+                    <input type="submit" name="confirm_delete"
+                        value="Note! Just Kidding!" />
+                    <input type="hidden" name="event_id"
+                        value="$event->id" />
+                    <input type="hidden" name="token"
+                        value="$_SESSION[token]" />
+                </p>
+            </form>
+CONFIRM_DELETE;
     }
 }
 ?>

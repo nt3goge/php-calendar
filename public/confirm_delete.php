@@ -2,8 +2,13 @@
 
 declare(strict_types=1);
 
-if (isset($_GET['event_id'])) {
-    $id = preg_replace('/[^0-9]/', '', $_GET['event_id']);
+$status = session_status();
+if ($status == PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (isset($_POST['event_id']) && isset($_SESSION['user'])) {
+    $id = preg_replace('/[^0-9]/', '', $_POST['event_id']);
 
     if (empty($id)) {
         header('Location: ./');
@@ -22,10 +27,9 @@ $cssFiles = ['style.css', 'admin.css'];
 include_once 'assets/common/header.inc.php';
 
 $cal = new Calendar($dbo);
+$markup = $cal->confirmDelete($id);
 ?>
 <div id="content">
-<?php echo $cal->displayEvent($id); ?><a href="./">&laquo; Back to the calendar</a>
+    <?php echo $markup; ?>
 </div>
-<?php 
-include_once 'assets/common/footer.inc.php';
-?>
+<?php include_once 'assets/common/footer.inc.php'; ?>

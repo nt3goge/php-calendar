@@ -18,6 +18,16 @@ define('ACTIONS', [
         'object' => 'Calendar',
         'method' => 'processForm',
         'header' => 'Location: ../../',
+    ],
+    'user_login' => [
+        'object' => 'Admin',
+        'method' => 'processLoginForm',
+        'header' => 'Location: ../../',
+    ],
+    'user_logout' => [
+        'object' => 'Admin',
+        'method' => 'processLogout',
+        'header' => 'Location: ../../',
     ]
 ]);
 
