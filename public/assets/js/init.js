@@ -119,18 +119,26 @@ jQuery(function($) {
         });
     });
     
-    $('body').on('click', '.admin', function(event) {
+    $('body').on('click', '.admin-options form, .admin', function(event) {
         event.preventDefault();
         
-        var action = 'edit_event';
+        var action = $(event.target).attr('name') || 'edit_event',
+            id = $(event.target)
+                    .siblings('input[name=event_id]')
+                        .val();
+
+        id = (id != undefined) ? '&event_id' + id : '';
 
         $.ajax({
             type: 'POST',
             url: processFile,
-            data: 'action=' + action,
+            data: 'action=' + action + id,
             success: function(data) {
                 var form = $(data).hide(),
-                    modal = objectModal.initModal();
+                    modal = objectModal.initModal()
+                                .children(':not(.modal-close-btn)')
+                                .remove()
+                                .end();
 
                 objectModal.boxIn(null, modal);
 
@@ -152,6 +160,20 @@ jQuery(function($) {
     $('body').on('click', '.edit-form input[type="submit"]', function(event) {
         event.preventDefault();
 
+        if ($(this).attr('name') == 'event_submit' && $('.active').length > 0) {
+            var oldTitle = $('.active')[0].innerHTML;
+            var formArray = $(this).parents('form').serializeArray();
+            var titleArray = $.grep(formArray, function(element) {
+                return element.name === 'event_title';
+            });
+
+            var newTitle = titleArray.length > 0 ? titleArray[0].value : '';
+
+            if (newTitle !== oldTitle) {
+                $('.active')[0].innerHTML = newTitle;
+            }
+        }
+
         var formData = $(this).parents('form').serialize();
 
         $.ajax({
@@ -160,7 +182,10 @@ jQuery(function($) {
             data: formData,
             success: function(data) {
                 objectModal.boxOut();
-                objectModal.addEvent(data, formData);
+
+                if ($('name=event_id').val().length == 0) {
+                    objectModal.addEvent(data, formData);
+                }
             },
             error: function(message) {
                 modal.append(message);

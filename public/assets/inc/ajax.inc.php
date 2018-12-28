@@ -25,6 +25,10 @@ define('ACTIONS', [
     'event_edit' => [
         'object' => 'Calendar',
         'method' => 'processForm'
+    ],
+    'delete_event' => [
+        'object' => 'Calendar',
+        'method' => 'confirmDelete'
     ]
 ]);
 

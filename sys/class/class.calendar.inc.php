@@ -267,7 +267,7 @@ FORM_MARKUP;
             $stmt->execute();
             $stmt->closeCursor();
             
-            return true;
+            return $this->db->lastInsertId();
         } catch (Exception $e) {
             return $e->getMessage();
         }
