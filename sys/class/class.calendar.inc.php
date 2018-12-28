@@ -94,7 +94,8 @@ class Calendar extends DB_Connect
         define('WEEKDAYS', array('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'));
 
         $calMonth = date('F Y', strtotime($this->_userDate));
-        $html = '<h2>' . $calMonth . '</h2>';
+        $calID = date('Y-m', strtotime($this->_userDate));
+        $html = '<h2 id="month-' . $calID . '">' . $calMonth . '</h2>';
         for ($d = 0, $labels = NULL; $d < 7; ++$d) {
             $labels .= '<li>' . WEEKDAYS[$d] . '</li>';
         }
