@@ -66,6 +66,11 @@ jQuery(function($) {
                 .fadeIn('slow');
             }
         },
+        'removeEvent': function() {
+            $('.active').fadeOut('slow', function() {
+                $(this).remove();
+            });
+        },
         'deserialize': function(string) {
             var data = string.split('&'),
                 pairs = [], entry = {}, key, val;
@@ -127,7 +132,7 @@ jQuery(function($) {
                     .siblings('input[name=event_id]')
                         .val();
 
-        id = (id != undefined) ? '&event_id' + id : '';
+        id = (id != undefined) ? '&event_id=' + id : '';
 
         $.ajax({
             type: 'POST',
@@ -174,16 +179,30 @@ jQuery(function($) {
             }
         }
 
-        var formData = $(this).parents('form').serialize();
+        var formData = $(this).parents('form').serialize(),
+            submitVal = $(this).val(),
+            remove = false;
+
+        if ($(this).attr('name') == 'confirm_delete') {
+            formData += '&action=confirm_delete' + '&confirm_delete=' + submitVal;
+
+            if (submitVal == 'Yes, Delete It') {
+                remove = true;
+            }
+        }
 
         $.ajax({
             type: 'POST',
             url: processFile,
             data: formData,
             success: function(data) {
+                if (remove === true) {
+                    objectModal.removeEvent();
+                }
+
                 objectModal.boxOut();
 
-                if ($('name=event_id').val().length == 0) {
+                if ($('name=event_id').val().length == 0 && remove === false) {
                     objectModal.addEvent(data, formData);
                 }
             },
