@@ -69,6 +69,70 @@ TEST_DATA;
 
         echo '<p><b>use: khong nhan nhung gia tri tu a den c preg_replace("/([^a-c])/i", "<em>$1</em>", $string)</b></p>
         <hr/>';
+
+        echo preg_replace('/(\b\w{4}\b)/i', '<em>$1</em>', $string);
+
+        echo '<p><b>use: preg_replace("/(\b\w{4}\b)/i", "<em>$1</em>", $string)</b></p>
+        <hr/>';
+
+        echo preg_replace('/\b(\w{3}|\w{6,7})\b/i', '<em>$1</em>', $string);
+
+        echo '<p><b>use: preg_replace("/\b(\w{3}|\w{6,7})\b/i", "<em>$1</em>", $string)</b></p>
+        <hr/>';
+       
+        echo preg_replace('/(expressions?)/i', '<em>$1</em>', $string);
+
+        echo '<p><b>use: preg_replace("/(expressions?)/i", "<em>$1</em>", $string)</b></p>
+        <hr/>';
+        
+        echo preg_replace('/(regex(es)?)/i', '<em>$1</em>', $string);
+
+        echo '<p><b>use: preg_replace("/(regex(es)?)/i", "<em>$1</em>", $string)</b></p>
+        <hr/>';
+
+        echo preg_replace('/(reg(ular\s)?ex(es)?)/i', '<em>$1</em>', $string);
+
+        echo '<p><b>use: preg_replace("/(reg(ular\s)?ex(es)?)/i", "<em>$1</em>", $string)</b></p>
+        <hr/>';
+        
+        echo preg_replace('/(reg(ular\s)?ex(pression|es)?)/i', '<em>$1</em>', $string);
+
+        echo '<p><b>use: preg_replace("/(reg(ular\s)?ex(pression|es)?)/i", "<em>$1</em>", $string)</b></p>
+        <hr/>';
+        
+        echo preg_replace('/(reg(ular\s)?ex(pressions?|es)?)/i', '<em>$1</em>', $string);
+
+        echo '<p><b>use: preg_replace("/(reg(ular\s)?ex(pressions?|es)?)/i", "<em>$1</em>", $string)</b></p>
+        <hr/>';
+
+        $dates[] = '2019-01-01 19:00:00';
+        $dates[] = 'Tuesday, January 01st at 7pm';
+        $dates[] = '01/01/19 07:00pm';
+        $dates[] = '2019-01-01 190:00:00';
+
+        foreach($dates as $date) {
+            echo '<p>,' . preg_replace('/(\d*)/', '<em>$1</em>', $date) . '</p>';
+        }
+        echo '<p><b>use: preg_replace("/(\d*)/", "<em>$1</em>", $dates)</b></p>
+        <hr/>';
+        
+        foreach($dates as $date) {
+            echo '<p>,' . preg_replace('/^(\d{4}(-\d{2}))/', '<em>$1</em>', $date) . '</p>';
+        }
+        echo '<p><b>use: preg_replace("/^(\d{4}(-d{2})/", "<em>$1</em>", $dates)</b></p>
+        <hr/>';
+        
+        foreach($dates as $date) {
+            echo '<p>,' . preg_replace('/^(\d{4}(-\d{2}){2})/', '<em>$1</em>', $date) . '</p>';
+        }
+        echo '<p><b>use: preg_replace("/^(\d{4}(-d{2}){2})/", "<em>$1</em>", $dates)</b></p>
+        <hr/>';
+        
+        foreach($dates as $date) {
+            echo '<p>,' . preg_replace('/^(\d{4}(-\d{2}){2} (\d{2})(:\d{2}){2})$/', '<em>$1</em>', $date) . '</p>';
+        }
+        echo '<p><b>use: preg_replace("/^(\d{4}(-\d{2}){2} (\d{2})(:\d{2}){2})$/", "<em>$1</em>", $dates)</b></p>
+        <hr/>';
     ?>
 </body>
 </html>

@@ -181,13 +181,22 @@ jQuery(function($) {
 
         var formData = $(this).parents('form').serialize(),
             submitVal = $(this).val(),
-            remove = false;
+            remove = false,
+            start = $(this).siblings('[name=event_start]').val(),
+            end = $(this).siblings('[name=event_end]').val();
 
         if ($(this).attr('name') == 'confirm_delete') {
             formData += '&action=confirm_delete' + '&confirm_delete=' + submitVal;
 
             if (submitVal == 'Yes, Delete It') {
                 remove = true;
+            }
+        }
+        
+        if ($(this).siblings('[name=action]').val() == 'event_edit') {
+            if (!$.validDate(start) || !$.validDate(end)) {
+                alert('Valid dates only! (YYYY-MM-DD HH:MM:SS)');
+                return false;
             }
         }
 

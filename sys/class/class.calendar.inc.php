@@ -251,6 +251,10 @@ FORM_MARKUP;
         $start = htmlentities($_POST['event_start'], ENT_QUOTES);
         $end = htmlentities($_POST['event_end'], ENT_QUOTES);
 
+        if (!$this->_validDate($start) || !$this->_validDate($end)) {
+            return 'Invalid date format! Use YYYY-MM-DD HH:MM:SS';
+        }
+
         if (empty($_POST['event_id'])) {
             $sql = 'INSERT INTO events (event_title, event_desc, event_start, event_end) VALUES (:title, :description, :start, :end)'; 
         } else {
@@ -271,6 +275,12 @@ FORM_MARKUP;
         } catch (Exception $e) {
             return $e->getMessage();
         }
+    }
+
+    private function _validDate($date)
+    {
+        $pattern = '/^(\d{4}(-\d{2}){2} (\d{2})(:\d{2}){2})$/';
+        return preg_match($pattern, $date) == 1 ? true : false;
     }
 
     private function _adminGeneralOptions()
