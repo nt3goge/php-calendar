@@ -91,7 +91,11 @@ jQuery(function($) {
         }
     };
 
-    $('body').on('click', 'li>a', function(event) {
+    $.fn.dateZoom.defaults.fontSize = '13px';
+
+    $('body')
+        .dateZoom()
+        .on('click', 'li>a', function(event) {
         event.preventDefault();
 
         $(this).addClass('active');
